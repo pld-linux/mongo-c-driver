@@ -21,10 +21,12 @@ URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	cyrus-sasl-devel
+BuildRequires:	snappy-devel
 BuildRequires:	libbson-devel >= 1.8
 BuildRequires:	libtool
 BuildRequires:	openssl-devel
 BuildRequires:	perl-base
+BuildRequires:	pkgconfig
 BuildRequires:	snappy-devel
 BuildRequires:	zlib-devel
 %if %{with tests}
