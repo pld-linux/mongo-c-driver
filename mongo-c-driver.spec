@@ -21,7 +21,6 @@ URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	cyrus-sasl-devel
-BuildRequires:	snappy-devel
 BuildRequires:	libbson-devel >= 1.8
 BuildRequires:	libtool
 BuildRequires:	openssl-devel
@@ -69,8 +68,10 @@ Documentation: http://api.mongodb.org/c/%{version}/
 %patch0 -p1
 
 %build
-: Generate build scripts from sources
-autoreconf --force --install --verbose -I build/autotools
+%{__aclocal} -I build/autotools -I build/autotools/m4
+%{__libtoolize}
+%{__autoconf} --include=build/autotools
+%{__automake}
 
 export LIBS=-lpthread
 
