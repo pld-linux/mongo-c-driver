@@ -12,7 +12,7 @@ diff -up ./build/autotools/Libbson.m4.rpm ./build/autotools/Libbson.m4
  # greater than our required version.
  AS_IF([test "x${with_libbson}" = xauto],
 -      [PKG_CHECK_MODULES(BSON, [libbson-1.0 >= libbson_required_version],
-+      [PKG_CHECK_MODULES(BSON, [libbson-1.0 >= 1.6],
++      [PKG_CHECK_MODULES(BSON, [libbson-1.0 >= 1.8],
                           [with_libbson=system],
                           [with_libbson=bundled])])
  
@@ -20,7 +20,7 @@ diff -up ./build/autotools/Libbson.m4.rpm ./build/autotools/Libbson.m4
  AS_IF([test "x${with_libbson}" = xsystem],
        [PKG_CHECK_MODULES(BSON,
 -                         [libbson-1.0 >= libbson_required_version],
-+                         [libbson-1.0 >= 1.6],
++                         [libbson-1.0 >= 1.8],
                           [],
                           [AC_MSG_ERROR([
  

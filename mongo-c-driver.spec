@@ -2,6 +2,7 @@
 # Conditional build:
 %bcond_with	tests		# build with tests
 %bcond_with	doc		# build docs
+%bcond_without	sasl		# Use libsasl for Kerberos.
 
 # NOTE about arch:
 # See https://jira.mongodb.org/browse/CDRIVER-1186
@@ -20,7 +21,7 @@ Patch0:		%{name}-rpm.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	cyrus-sasl-devel
+%{?with_sasl:BuildRequires:	cyrus-sasl-devel}
 BuildRequires:	libbson-devel >= 1.8
 BuildRequires:	libtool
 BuildRequires:	openssl-devel
@@ -82,7 +83,7 @@ export LIBS=-lpthread
 	--enable-crypto-system-profile \
 	%{__enable_disable doc man-pages} \
 	%{__enable_disable tests} \
-	--enable-sasl \
+	--enable-sasl=%{!?with_sasl:no}%{?with_sasl:yes} \
 	--enable-ssl \
 	--with-libbson=system \
 	--with-snappy=system \
