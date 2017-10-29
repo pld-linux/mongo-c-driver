@@ -3,7 +3,7 @@
 %bcond_with	tests		# build with tests
 %bcond_with	doc		# build docs
 %bcond_without	sasl		# Use libsasl for Kerberos.
-%bcond_without	ssl		# Enable TLS connections and SCRAM-SHA-1 authentication.
+%bcond_with	ssl		# Enable TLS connections and SCRAM-SHA-1 authentication.
 
 # NOTE about arch:
 # See https://jira.mongodb.org/browse/CDRIVER-1186
@@ -13,7 +13,7 @@
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
 Version:	1.8.1
-Release:	1
+Release:	2
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
