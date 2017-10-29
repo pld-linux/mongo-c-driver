@@ -3,6 +3,7 @@
 %bcond_with	tests		# build with tests
 %bcond_with	doc		# build docs
 %bcond_without	sasl		# Use libsasl for Kerberos.
+%bcond_without	ssl		# Enable TLS connections and SCRAM-SHA-1 authentication.
 
 # NOTE about arch:
 # See https://jira.mongodb.org/browse/CDRIVER-1186
@@ -24,7 +25,7 @@ BuildRequires:	automake
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
 BuildRequires:	libbson-devel >= 1.8
 BuildRequires:	libtool
-BuildRequires:	openssl-devel
+%{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	perl-base
 BuildRequires:	pkgconfig
 BuildRequires:	snappy-devel
@@ -44,7 +45,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		libver       1.0
 
 %description
-%{name} is a client library written in C for MongoDB.
+mongo-c-driver is a client library written in C for MongoDB.
 
 %package libs
 Summary:	Shared libraries for %{name}
@@ -80,11 +81,10 @@ export LIBS=-lpthread
 	--enable-debug-symbols \
 	--enable-shm-counters \
 	--disable-automatic-init-and-cleanup \
-	--enable-crypto-system-profile \
 	%{__enable_disable doc man-pages} \
 	%{__enable_disable tests} \
 	--enable-sasl=%{!?with_sasl:no}%{?with_sasl:yes} \
-	--enable-ssl \
+	--enable-ssl=%{!?with_ssl:no}%{?with_ssl:openssl --enable-crypto-system-profile} \
 	--with-libbson=system \
 	--with-snappy=system \
 	--with-zlib=system \
