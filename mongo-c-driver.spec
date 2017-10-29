@@ -78,7 +78,8 @@ Documentation: http://api.mongodb.org/c/%{version}/
 export LIBS=-lpthread
 
 %configure \
-	--enable-debug-symbols \
+	--disable-silent-rules \
+	--disable-optimizations \
 	--enable-shm-counters \
 	--disable-automatic-init-and-cleanup \
 	%{__enable_disable doc man-pages} \
@@ -101,11 +102,11 @@ rm -rf src/zlib-*
 rm -rf src/libbson
 %endif
 
-%{__make} all V=1
+%{__make} all
 
 # Explicit man target is needed for generating manual pages
 %if %{with doc}
-%{__make} doc/man V=1
+%{__make} doc/man
 %endif
 
 %if %{with tests}
