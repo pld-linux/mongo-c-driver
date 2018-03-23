@@ -12,18 +12,18 @@
 
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
-Version:	1.8.2
+Version:	1.9.3
 Release:	1
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	5b2f2b430da097ec4e573a1327ec1e4b
+# Source0-md5:	39adfe23511051c1509890e17a219d8e
 Patch0:		%{name}-rpm.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
 BuildRequires:	automake
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
-BuildRequires:	libbson-devel >= 1.8
+BuildRequires:	libbson-devel >= 1.9
 BuildRequires:	libtool
 %{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	perl-base
