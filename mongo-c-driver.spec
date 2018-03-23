@@ -12,12 +12,12 @@
 
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
-Version:	1.8.1
-Release:	2
+Version:	1.8.2
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	52d54a4107a2da20c1a1b28bc1ff9d44
+# Source0-md5:	5b2f2b430da097ec4e573a1327ec1e4b
 Patch0:		%{name}-rpm.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
