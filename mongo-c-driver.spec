@@ -2,8 +2,8 @@
 # Conditional build:
 %bcond_with	tests		# build with tests
 %bcond_with	doc		# build docs
-%bcond_without	sasl		# Use libsasl for Kerberos.
-%bcond_with	ssl		# Enable TLS connections and SCRAM-SHA-1 authentication.
+%bcond_with	sasl		# Use libsasl for Kerberos.
+%bcond_without	ssl		# Enable TLS connections and SCRAM-SHA-1 authentication.
 
 # NOTE about arch:
 # See https://jira.mongodb.org/browse/CDRIVER-1186
