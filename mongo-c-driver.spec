@@ -13,12 +13,14 @@
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
 Version:	1.9.3
-Release:	1
+Release:	2
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	39adfe23511051c1509890e17a219d8e
 Patch0:		%{name}-rpm.patch
+Patch1:		https://github.com/mongodb/mongo-c-driver/pull/490.patch
+# Patch1-md5:	5d81ac5717da1cb9752837ae40ab0a28
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -68,6 +70,7 @@ Documentation: http://api.mongodb.org/c/%{version}/
 %prep
 %setup -q -n %{name}-%{version}%{?prever:-dev}
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__aclocal} -I build/autotools -I build/autotools/m4
