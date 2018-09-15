@@ -13,7 +13,7 @@
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
 Version:	1.9.3
-Release:	2
+Release:	3
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
