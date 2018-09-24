@@ -12,20 +12,15 @@
 
 Summary:	Client library written in C for MongoDB
 Name:		mongo-c-driver
-Version:	1.9.3
-Release:	3
+Version:	1.11.0
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	39adfe23511051c1509890e17a219d8e
-Patch0:		%{name}-rpm.patch
-Patch1:		https://github.com/mongodb/mongo-c-driver/pull/490.patch
-# Patch1-md5:	5d81ac5717da1cb9752837ae40ab0a28
+# Source0-md5:	a1241743ac6c528df0b345560dfd07eb
 URL:		https://github.com/mongodb/mongo-c-driver
-BuildRequires:	autoconf
-BuildRequires:	automake
+BuildRequires:	cmake
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
-BuildRequires:	libbson-devel >= 1.9
 BuildRequires:	libtool
 %{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	perl-base
@@ -52,6 +47,7 @@ mongo-c-driver is a client library written in C for MongoDB.
 %package libs
 Summary:	Shared libraries for %{name}
 Group:		Development/Libraries
+Requires:	libbson = %{version}-%{release}
 
 %description libs
 This package contains the shared libraries for %{name}.
@@ -67,50 +63,44 @@ This package contains the header files and development libraries for
 
 Documentation: http://api.mongodb.org/c/%{version}/
 
+%package -n libbson
+Summary:	Building, parsing, and iterating BSON documents
+License:	ASL 2.0 and ISC and MIT and zlib
+Group:		Libraries
+
+%description -n libbson
+This is a library providing useful routines related to building,
+parsing, and iterating BSON documents <http://bsonspec.org/>.
+
+%package -n libbson-devel
+Summary:	Development files for libbson
+License:	Apache v2.0
+Group:		Development/Libraries
+Requires:	libbson = %{version}-%{release}
+
+%description -n libbson-devel
+This package contains libraries and header files needed for developing
+applications that use libbson.
+
 %prep
-%setup -q -n %{name}-%{version}%{?prever:-dev}
-%patch0 -p1
-%patch1 -p1
+%setup -q
 
 %build
-%{__aclocal} -I build/autotools -I build/autotools/m4
-%{__libtoolize}
-%{__autoconf} --include=build/autotools
-%{__automake}
+install -d cmake-build
+cd cmake-build
+%cmake \
+	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
+	-DENABLE_EXAMPLES=ON \
+	-DENABLE_HTML_DOCS=OFF \
+	-DENABLE_MAN_PAGES=%{!?with_doc:OFF}%{?with_doc:ON} \
+	-DENABLE_SASL=%{!?with_sasl:OFF}%{?with_sasl:ON} \
+	-DENABLE_SHM_COUNTERS=ON \
+	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
+	-DENABLE_STATIC=OFF \
+	-DENABLE_TESTS=%{!?with_tests:OFF}%{?with_tests:ON} \
+	..
 
-export LIBS=-lpthread
-
-%configure \
-	--disable-silent-rules \
-	--disable-optimizations \
-	--enable-shm-counters \
-	--disable-automatic-init-and-cleanup \
-	%{__enable_disable doc man-pages} \
-	%{__enable_disable tests} \
-	--enable-sasl=%{!?with_sasl:no}%{?with_sasl:yes} \
-	--enable-ssl=%{!?with_ssl:no}%{?with_ssl:openssl --enable-crypto-system-profile} \
-	--with-libbson=system \
-	--with-snappy=system \
-	--with-zlib=system \
-	--disable-html-docs \
-	--enable-examples \
-
-%if 0
-# remove these after autofoo as files required by automake
-#configure.ac:68: installing 'build/autotools/missing'
-#configure.ac:81: error: required file 'src/snappy-1.1.3/snappy-stubs-public.h.in' not found
-#configure.ac:81: error: required file 'src/zlib-1.2.11/zconf.h.in' not found
-rm -rf src/snappy-*
-rm -rf src/zlib-*
-rm -rf src/libbson
-%endif
-
-%{__make} all
-
-# Explicit man target is needed for generating manual pages
-%if %{with doc}
-%{__make} doc/man
-%endif
+%{__make}
 
 %if %{with tests}
 : Run a server
@@ -139,25 +129,17 @@ exit $ret
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__make} install \
+%{__make} -C cmake-build install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
-
-: install examples
-for i in examples/*.c examples/*/*.c; do
-	install -Dpm 644 $i $RPM_BUILD_ROOT%{_docdir}/%{name}/$i
-done
-
-: Rename documentation to match subpackage name
-mv $RPM_BUILD_ROOT%{_docdir}/%{name} \
-   $RPM_BUILD_ROOT%{_docdir}/%{name}-devel
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post   libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
+
+%post   -n libbson -p /sbin/ldconfig
+%postun -n libbson -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
@@ -171,7 +153,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%{_docdir}/%{name}-devel
 %{_includedir}/libmongoc-%{libver}
 %{_libdir}/libmongoc-%{libver}.so
 %{_pkgconfigdir}/libmongoc-*.pc
@@ -179,3 +160,16 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with doc}
 %{_mandir}/man3/mongoc*
 %endif
+
+%files -n libbson
+%defattr(644,root,root,755)
+%doc COPYING THIRD_PARTY_NOTICES
+%attr(755,root,root) %{_libdir}/libbson-%{libver}.so.*.*.*
+%ghost %{_libdir}/libbson-%{libver}.so.0
+
+%files -n libbson-devel
+%defattr(644,root,root,755)
+%{_includedir}/libbson-%{libver}
+%{_libdir}/libbson-%{libver}.so
+%{_libdir}/cmake/libbson-%{libver}
+%{_pkgconfigdir}/libbson-%{libver}.pc
