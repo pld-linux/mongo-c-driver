@@ -21,7 +21,6 @@ Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
-BuildRequires:	libtool
 %{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	perl-base
 BuildRequires:	pkgconfig
