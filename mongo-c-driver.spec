@@ -131,6 +131,12 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C cmake-build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+install -d $RPM_BUILD_ROOT%{_examplesdir}/libmongoc-%{version}
+cp -a src/libmongoc/examples/* $RPM_BUILD_ROOT%{_examplesdir}/libmongoc-%{version}
+
+install -d $RPM_BUILD_ROOT%{_examplesdir}/libbson-%{version}
+cp -a src/libbson/examples/* $RPM_BUILD_ROOT%{_examplesdir}/libbson-%{version}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -152,6 +158,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
+%doc NEWS
 %{_includedir}/libmongoc-%{libver}
 %{_libdir}/libmongoc-%{libver}.so
 %{_pkgconfigdir}/libmongoc-*.pc
@@ -159,6 +166,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with doc}
 %{_mandir}/man3/mongoc*
 %endif
+%{_examplesdir}/libmongoc-%{version}
 
 %files -n libbson
 %defattr(644,root,root,755)
@@ -168,7 +176,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n libbson-devel
 %defattr(644,root,root,755)
+%doc src/libbson/NEWS
 %{_includedir}/libbson-%{libver}
 %{_libdir}/libbson-%{libver}.so
 %{_libdir}/cmake/libbson-%{libver}
 %{_pkgconfigdir}/libbson-%{libver}.pc
+%{_examplesdir}/libbson-%{version}
