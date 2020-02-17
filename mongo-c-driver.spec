@@ -13,13 +13,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.14.0
-Release:	3
+Version:	1.16.1
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	374652f8bd68b89616e35885f7077b97
+# Source0-md5:	21c10593f80599e34aaa6c1ff6d4a681
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.1
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
@@ -215,6 +215,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/libmongoc-%{libver}.pc
 %{_pkgconfigdir}/libmongoc-ssl-%{libver}.pc
 %{_libdir}/cmake/libmongoc-%{libver}
+%{_libdir}/cmake/mongoc-*.*
 %if %{with doc}
 %{_mandir}/man3/mongoc_*.3*
 %endif
@@ -237,6 +238,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libbson-%{libver}.so
 %{_includedir}/libbson-%{libver}
 %{_pkgconfigdir}/libbson-%{libver}.pc
+%{_libdir}/cmake/bson-*.*
 %{_libdir}/cmake/libbson-%{libver}
 %if %{with doc}
 %{_mandir}/man3/bson_*.3*
