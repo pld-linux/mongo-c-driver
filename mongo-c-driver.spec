@@ -13,23 +13,25 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.16.1
+Version:	1.16.2
 Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	21c10593f80599e34aaa6c1ff6d4a681
+# Source0-md5:	6561011b25d0e690d0759247bcd390e4
+Patch0:		%{name}-sphinx.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.1
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
 BuildRequires:	libicu-devel
 %{?with_ssl:BuildRequires:	openssl-devel}
-BuildRequires:	perl-base
 BuildRequires:	pkgconfig
+BuildRequires:	python
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
-BuildRequires:	zlib-devel
+BuildRequires:	zlib-devel >= 1.2.11
+BuildRequires:	zstd-devel
 %if %{with tests}
 BuildRequires:	mongodb-server
 BuildRequires:	openssl
@@ -51,6 +53,7 @@ Summary:	Shared library for mongo-c-driver
 Summary(pl.UTF-8):	Biblioteka współdzielona mongo-c-driver
 Group:		Libraries
 Requires:	libbson = %{version}-%{release}
+Requires:	zlib >= 1.2.11
 
 %description libs
 This package contains the shared library for mongo-c-driver.
@@ -127,6 +130,7 @@ Dokumentacja API biblioteki libbson.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 install -d cmake-build
@@ -144,7 +148,7 @@ cd cmake-build
 	-DENABLE_TESTS=%{!?with_tests:OFF}%{?with_tests:ON} \
 	-DENABLE_ZLIB=SYSTEM
 
-%{__make}
+%{__make} -j1
 
 %if %{with tests}
 : Run a server
