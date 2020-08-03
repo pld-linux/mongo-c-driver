@@ -13,14 +13,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.16.2
-Release:	2
+Version:	1.17.0
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	6561011b25d0e690d0759247bcd390e4
-Patch0:		%{name}-sphinx.patch
+# Source0-md5:	2201cea8f31c6e7a4215e736dd74627a
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.1
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
@@ -130,12 +129,11 @@ Dokumentacja API biblioteki libbson.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 install -d cmake-build
 cd cmake-build
-%cmake .. \
+%cmake \
 	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
 	-DENABLE_BSON=ON \
 	-DENABLE_EXAMPLES=ON \
@@ -146,7 +144,8 @@ cd cmake-build
 	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
 	-DENABLE_STATIC=OFF \
 	-DENABLE_TESTS=%{!?with_tests:OFF}%{?with_tests:ON} \
-	-DENABLE_ZLIB=SYSTEM
+	-DENABLE_ZLIB=SYSTEM \
+	..
 
 %{__make} -j1
 
