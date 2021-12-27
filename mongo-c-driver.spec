@@ -13,13 +13,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.19.2
+Version:	1.20.0
 Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	3742103172f6f18ca8aede0c74ee421d
+# Source0-md5:	9cd2badc1cea0a7943325ef18caef5c5
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.1
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
