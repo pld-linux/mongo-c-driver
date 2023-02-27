@@ -1,3 +1,4 @@
+# TODO: mongocrypt support
 #
 # Conditional build:
 %bcond_with	tests	# build with tests
@@ -13,13 +14,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.20.0
-Release:	4
+Version:	1.23.2
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	9cd2badc1cea0a7943325ef18caef5c5
+# Source0-md5:	a06b6520531993746c0dfba8763749c1
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.1
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
@@ -29,8 +30,8 @@ BuildRequires:	pkgconfig
 BuildRequires:	python
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
-BuildRequires:	zlib-devel >= 1.2.11
-BuildRequires:	zstd-devel
+BuildRequires:	zlib-devel >= 1.2.12
+BuildRequires:	zstd-devel >= 0.8.0
 %if %{with tests}
 BuildRequires:	mongodb-server
 BuildRequires:	openssl
@@ -52,7 +53,8 @@ Summary:	Shared library for mongo-c-driver
 Summary(pl.UTF-8):	Biblioteka współdzielona mongo-c-driver
 Group:		Libraries
 Requires:	libbson = %{version}-%{release}
-Requires:	zlib >= 1.2.11
+Requires:	zlib >= 1.2.12
+Requires:	zstd >= 0.8.0
 
 %description libs
 This package contains the shared library for mongo-c-driver.
