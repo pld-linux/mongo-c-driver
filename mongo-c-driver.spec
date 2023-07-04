@@ -14,15 +14,15 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.23.3
-Release:	2
+Version:	1.24.1
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	c131ba2fc518c732781226bfda05cd27
+# Source0-md5:	8e88d6d3b5360d81ce61e98fce27df94
 URL:		https://github.com/mongodb/mongo-c-driver
-BuildRequires:	cmake >= 3.1
+BuildRequires:	cmake >= 3.15
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
 BuildRequires:	libicu-devel
 %{?with_ssl:BuildRequires:	openssl-devel}
@@ -133,12 +133,9 @@ Dokumentacja API biblioteki libbson.
 %setup -q
 
 %build
-install -d cmake-build
-cd cmake-build
-%cmake \
+%cmake -B cmake-build \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
-	-DENABLE_BSON=ON \
 	-DENABLE_EXAMPLES=ON \
 	-DENABLE_HTML_DOCS=%{!?with_doc:OFF}%{?with_doc:ON} \
 	-DENABLE_MAN_PAGES=%{!?with_doc:OFF}%{?with_doc:ON} \
@@ -147,12 +144,12 @@ cd cmake-build
 	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
 	-DENABLE_STATIC=OFF \
 	-DENABLE_TESTS=%{!?with_tests:OFF}%{?with_tests:ON} \
-	-DENABLE_ZLIB=SYSTEM \
-	..
+	-DENABLE_ZLIB=SYSTEM
 
-%{__make} -j1
+%{__make} -C cmake-build -j1
 
 %if %{with tests}
+cd cmake-build
 : Run a server
 install -d dbtest
 mongod \
