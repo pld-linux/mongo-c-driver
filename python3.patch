@@ -1,0 +1,17 @@
+diff -ur mongo-c-driver-1.24.1.orig/CMakeLists.txt mongo-c-driver-1.24.1/CMakeLists.txt
+--- mongo-c-driver-1.24.1.orig/CMakeLists.txt	2023-06-21 14:31:37.000000000 +0200
++++ mongo-c-driver-1.24.1/CMakeLists.txt	2023-07-18 21:59:49.333339128 +0200
+@@ -240,10 +240,10 @@
+       file (STRINGS ${PROJECT_SOURCE_DIR}/VERSION_CURRENT BUILD_VERSION)
+       message (STATUS "file VERSION_CURRENT contained BUILD_VERSION ${BUILD_VERSION}")
+    else ()
+-      find_package (PythonInterp)
+-      if (PYTHONINTERP_FOUND)
++      find_package (Python3 3.2 REQUIRED)
++      if (Python3_FOUND)
+          execute_process (
+-            COMMAND ${PYTHON_EXECUTABLE} build/calc_release_version.py
++            COMMAND ${Python3_EXECUTABLE} build/calc_release_version.py
+             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+             OUTPUT_VARIABLE CALC_RELEASE_VERSION
+             RESULT_VARIABLE CALC_RELEASE_VERSION_RESULT

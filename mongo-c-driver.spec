@@ -21,13 +21,14 @@ Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	8e88d6d3b5360d81ce61e98fce27df94
+Patch0:		python3.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.15
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
 BuildRequires:	libicu-devel
 %{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	pkgconfig
-BuildRequires:	python
+BuildRequires:	python3 >= 1:3.2
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
 BuildRequires:	zlib-devel >= 1.2.12
@@ -131,6 +132,7 @@ Dokumentacja API biblioteki libbson.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %cmake -B cmake-build \
