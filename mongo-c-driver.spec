@@ -14,14 +14,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.24.1
-Release:	2
+Version:	1.30.3
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	8e88d6d3b5360d81ce61e98fce27df94
-Patch0:		python3.patch
+# Source0-md5:	89eb20dc3b9aa13ef1b00fcd0780ef03
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.15
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
@@ -29,6 +28,8 @@ BuildRequires:	libicu-devel
 %{?with_ssl:BuildRequires:	openssl-devel}
 BuildRequires:	pkgconfig
 BuildRequires:	python3 >= 1:3.2
+%{?with_doc:BuildRequires:	python3-sphinx_design}
+BuildRequires:	rpmbuild(macros) >= 2.047
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
 BuildRequires:	zlib-devel >= 1.2.12
@@ -132,20 +133,20 @@ Dokumentacja API biblioteki libbson.
 
 %prep
 %setup -q
-%patch -P0 -p1
 
+%{__sed} -i -e '1s,/usr/bin/env bash,/bin/bash,' src/libbson/examples/*.sh src/libmongoc/examples/*.sh
 %build
 %cmake -B cmake-build \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
 	-DENABLE_EXAMPLES=ON \
-	-DENABLE_HTML_DOCS=%{!?with_doc:OFF}%{?with_doc:ON} \
-	-DENABLE_MAN_PAGES=%{!?with_doc:OFF}%{?with_doc:ON} \
+	-DENABLE_HTML_DOCS=%{__ON_OFF doc} \
+	-DENABLE_MAN_PAGES=%{__ON_OFF doc} \
 	-DENABLE_SASL=%{!?with_sasl:OFF}%{?with_sasl:CYRUS} \
 	-DENABLE_SHM_COUNTERS=ON \
 	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
 	-DENABLE_STATIC=OFF \
-	-DENABLE_TESTS=%{!?with_tests:OFF}%{?with_tests:ON} \
+	-DENABLE_TESTS=%{__ON_OFF tests} \
 	-DENABLE_ZLIB=SYSTEM
 
 %{__make} -C cmake-build -j1
