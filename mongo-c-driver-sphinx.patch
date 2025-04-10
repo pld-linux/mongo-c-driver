@@ -1,0 +1,11 @@
+--- mongo-c-driver-1.30.3/build/sphinx/mongoc_common.py.orig	2025-04-08 13:59:49.000000000 +0200
++++ mongo-c-driver-1.30.3/build/sphinx/mongoc_common.py	2025-04-09 22:40:13.743487403 +0200
+@@ -158,7 +158,7 @@ def generate_html_redirs(app: Sphinx, pa
+         f"redirect-for-{page}",
+         {"target": page, "writing-redirect": 1},
+         str(Path(__file__).parent.resolve() / "redirect.t.html"),
+-        str(redirect_file),
++        outfilename=str(redirect_file),
+     )
+     # Restore prior state:
+     builder.script_files[:] = prev_scripts

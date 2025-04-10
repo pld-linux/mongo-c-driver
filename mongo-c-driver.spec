@@ -21,6 +21,7 @@ Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	89eb20dc3b9aa13ef1b00fcd0780ef03
+Patch0:		%{name}-sphinx.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.15
 %{?with_sasl:BuildRequires:	cyrus-sasl-devel}
@@ -133,8 +134,10 @@ Dokumentacja API biblioteki libbson.
 
 %prep
 %setup -q
+%patch -P0 -p1
 
 %{__sed} -i -e '1s,/usr/bin/env bash,/bin/bash,' src/libbson/examples/*.sh src/libmongoc/examples/*.sh
+
 %build
 %cmake -B cmake-build \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
@@ -248,6 +251,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/cmake/libbson-%{libver}
 %if %{with doc}
 %{_mandir}/man3/bson_*.3*
+%{_mandir}/man3/libbson_legacy_extended_json.3*
 %endif
 %{_examplesdir}/libbson-%{version}
 
