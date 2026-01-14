@@ -30,6 +30,7 @@ BuildRequires:	libicu-devel
 BuildRequires:	pkgconfig
 BuildRequires:	python3 >= 1:3.2
 %{?with_doc:BuildRequires:	python3-sphinx_design}
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 2.047
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
@@ -87,6 +88,7 @@ Dokumentacja: http://mongoc.org/libmongoc/%{version}/
 Summary:	API documentation for mongo-c-driver library
 Summary(pl.UTF-8):	Dokumentacja API biblioteki mongo-c-driver
 Group:		Documentation
+BuildArch:	noarch
 
 %description apidocs
 API documentation for mongo-c-driver library.
@@ -127,6 +129,7 @@ wykorzystujących bibliotekę libbson.
 Summary:	API documentation for libbson library
 Summary(pl.UTF-8):	Dokumentacja API biblioteki libbson
 Group:		Documentation
+BuildArch:	noarch
 
 %description -n libbson-apidocs
 API documentation for libbson library.
