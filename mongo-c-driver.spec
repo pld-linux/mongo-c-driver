@@ -33,6 +33,7 @@ BuildRequires:	python3 >= 1:3.2
 BuildRequires:	rpmbuild(macros) >= 2.047
 BuildRequires:	snappy-devel
 %{?with_doc:BuildRequires:	sphinx-pdg}
+BuildRequires:	utf8proc-devel >= 2.8.0
 BuildRequires:	zlib-devel >= 1.2.12
 BuildRequires:	zstd-devel >= 0.8.0
 %if %{with tests}
@@ -40,6 +41,7 @@ BuildRequires:	mongodb-server
 BuildRequires:	openssl
 %endif
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	utf8proc >= 2.8.0
 Obsoletes:	mongo-c-driver-tools < 1.3.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -150,7 +152,8 @@ Dokumentacja API biblioteki libbson.
 	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
 	-DENABLE_STATIC=OFF \
 	-DENABLE_TESTS=%{__ON_OFF tests} \
-	-DENABLE_ZLIB=SYSTEM
+	-DENABLE_ZLIB=SYSTEM \
+	-DUSE_BUNDLED_UTF8PROC=OFF
 
 %{__make} -C cmake-build -j1
 
