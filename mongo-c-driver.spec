@@ -14,13 +14,13 @@
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.30.3
+Version:	1.30.8
 Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	89eb20dc3b9aa13ef1b00fcd0780ef03
+# Source0-md5:	bc0887611002ca53efbcc1593c69a597
 Patch0:		%{name}-sphinx.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.15
@@ -144,6 +144,9 @@ Dokumentacja API biblioteki libbson.
 %{__sed} -i -e '1s,/usr/bin/env bash,/bin/bash,' src/libbson/examples/*.sh src/libmongoc/examples/*.sh
 
 %build
+# generate html instead of dirhtml docs
+export EVG_DOCS_BUILD=1
+
 %cmake -B cmake-build \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
@@ -189,6 +192,8 @@ exit $ret
 %install
 rm -rf $RPM_BUILD_ROOT
 
+export EVG_DOCS_BUILD=1
+
 %{__make} -C cmake-build install \
 	DESTDIR=$RPM_BUILD_ROOT
 
@@ -220,12 +225,12 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %doc NEWS README.rst THIRD_PARTY_NOTICES
-%attr(755,root,root) %{_libdir}/libmongoc-%{libver}.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libmongoc-%{libver}.so.0
+%{_libdir}/libmongoc-%{libver}.so.*.*.*
+%ghost %{_libdir}/libmongoc-%{libver}.so.0
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libmongoc-%{libver}.so
+%{_libdir}/libmongoc-%{libver}.so
 %{_includedir}/libmongoc-%{libver}
 %{_pkgconfigdir}/libmongoc-%{libver}.pc
 %{_pkgconfigdir}/libmongoc-ssl-%{libver}.pc
@@ -239,18 +244,18 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with doc}
 %files apidocs
 %defattr(644,root,root,755)
-%doc cmake-build/src/libmongoc/doc/html/{_images,_static,*.html,*.js}
+%doc cmake-build/src/libmongoc/doc/html/{_sphinx_design_static,_static,*.html,*.js}
 %endif
 
 %files -n libbson
 %defattr(644,root,root,755)
 %doc src/libbson/{NEWS,THIRD_PARTY_NOTICES}
-%attr(755,root,root) %{_libdir}/libbson-%{libver}.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libbson-%{libver}.so.0
+%{_libdir}/libbson-%{libver}.so.*.*.*
+%ghost %{_libdir}/libbson-%{libver}.so.0
 
 %files -n libbson-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libbson-%{libver}.so
+%{_libdir}/libbson-%{libver}.so
 %{_includedir}/libbson-%{libver}
 %{_pkgconfigdir}/libbson-%{libver}.pc
 %{_libdir}/cmake/bson-*.*
