@@ -15,7 +15,7 @@ Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
 Version:	1.30.8
-Release:	1
+Release:	2
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
@@ -147,6 +147,9 @@ Dokumentacja API biblioteki libbson.
 # generate html instead of dirhtml docs
 export EVG_DOCS_BUILD=1
 
+# MONGO_USE_LLD below: on x32 lld emits TLS GOT entries with DTPOFF64 at +4
+# instead of +8, where DTPMOD64 clobbers it; every __thread var in libmongoc
+# then aliases to offset 0 and mongoc_uri_new() fails on any URI
 %cmake -B cmake-build \
 	-DCMAKE_INSTALL_LIBDIR=%{_lib} \
 	-DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
@@ -159,6 +162,9 @@ export EVG_DOCS_BUILD=1
 	-DENABLE_STATIC=OFF \
 	-DENABLE_TESTS=%{__ON_OFF tests} \
 	-DENABLE_ZLIB=SYSTEM \
+%ifarch x32
+	-DMONGO_USE_LLD=OFF \
+%endif
 	-DUSE_BUNDLED_UTF8PROC=OFF
 
 %{__make} -C cmake-build -j1
