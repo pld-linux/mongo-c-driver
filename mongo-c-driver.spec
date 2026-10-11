@@ -1,26 +1,30 @@
 # TODO: mongocrypt support
-#
-# Conditional build:
-%bcond_with	tests	# build with tests
-%bcond_without	doc	# HTML and man documentation
-%bcond_with	sasl	# SASL authentication (for Kerberos)
-%bcond_without	ssl	# TLS connections and SCRAM-SHA-1 authentication
-
 # NOTE about arch:
 # See https://jira.mongodb.org/browse/CDRIVER-1186
 # 32-bit MongoDB support was officially deprecated
 # in MongoDB 3.2, and support is being removed in 3.4.
+#
+# Conditional build:
+%bcond_with	tests		# build with tests
+%bcond_without	doc		# HTML and man documentation
+%bcond_with	sasl		# SASL authentication (for Kerberos)
+%bcond_without	ssl		# TLS connections and SCRAM-SHA-1 authentication
+%bcond_without	static_libs	# static libraries
 
+%if %{without static_libs}
+# tests require static libraries
+%undefine	with_tests
+%endif
 Summary:	Client library written in C for MongoDB
 Summary(pl.UTF-8):	Biblioteka kliencka do MongoDB napisana w C
 Name:		mongo-c-driver
-Version:	1.30.8
-Release:	2
+Version:	1.30.11
+Release:	1
 License:	Apache v2.0
 Group:		Libraries
 #Source0Download: https://github.com/mongodb/mongo-c-driver/releases/
 Source0:	https://github.com/mongodb/mongo-c-driver/releases/download/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	bc0887611002ca53efbcc1593c69a597
+# Source0-md5:	4caa42535f902fd227caf049a2697d4d
 Patch0:		%{name}-sphinx.patch
 URL:		https://github.com/mongodb/mongo-c-driver
 BuildRequires:	cmake >= 3.15
@@ -41,7 +45,7 @@ BuildRequires:	zstd-devel >= 0.8.0
 BuildRequires:	mongodb-server
 BuildRequires:	openssl
 %endif
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 Requires:	utf8proc >= 2.8.0
 Obsoletes:	mongo-c-driver-tools < 1.3.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -58,7 +62,7 @@ mongo-c-driver to biblioteka kliencka do MongoDB napisana w C.
 Summary:	Shared library for mongo-c-driver
 Summary(pl.UTF-8):	Biblioteka współdzielona mongo-c-driver
 Group:		Libraries
-Requires:	libbson = %{version}-%{release}
+Requires:	libbson%{?_isa} = %{version}-%{release}
 Requires:	zlib >= 1.2.12
 Requires:	zstd >= 0.8.0
 
@@ -72,7 +76,8 @@ Ten pakiet zawiera bibliotekę współdzieloną mongo-c-driver.
 Summary:	Header files for mongo-c-driver library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki mongo-c-driver
 Group:		Development/Libraries
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+Requires:	libbson-devel%{?_isa} = %{version}-%{release}
 
 %description devel
 This package contains the header files for mongo-c-driver library.
@@ -83,6 +88,23 @@ Documentation: http://mongoc.org/libmongoc/%{version}/
 Ten pakiet zawiera pliki nagłówkowe biblioteki mongo-c-driver.
 
 Dokumentacja: http://mongoc.org/libmongoc/%{version}/
+
+%package static
+Summary:	Static mongo-c-driver library
+Summary(pl.UTF-8):	Statyczna biblioteka mongo-c-driver
+Group:		Development/Libraries
+Requires:	%{name}-devel%{?_isa} = %{version}-%{release}
+Requires:	libbson-static%{?_isa} = %{version}-%{release}
+%{?with_ssl:Requires:	openssl-devel}
+Requires:	snappy-devel
+Requires:	zlib-devel >= 1.2.12
+Requires:	zstd-devel >= 0.8.0
+
+%description static
+Static mongo-c-driver library.
+
+%description static -l pl.UTF-8
+Statyczna biblioteka mongo-c-driver.
 
 %package apidocs
 Summary:	API documentation for mongo-c-driver library
@@ -115,7 +137,7 @@ Summary:	Development files for libbson
 Summary(pl.UTF-8):	Pliki programistyczne biblioteki libbson
 License:	Apache v2.0
 Group:		Development/Libraries
-Requires:	libbson = %{version}-%{release}
+Requires:	libbson%{?_isa} = %{version}-%{release}
 
 %description -n libbson-devel
 This package contains libraries and header files needed for developing
@@ -124,6 +146,18 @@ applications that use libbson.
 %description -n libbson-devel -l pl.UTF-8
 Ten pakiet zawiera pliki nagłówkowe do tworzenia aplikacji
 wykorzystujących bibliotekę libbson.
+
+%package -n libbson-static
+Summary:	Static libbson library
+Summary(pl.UTF-8):	Statyczna biblioteka libbson
+Group:		Development/Libraries
+Requires:	libbson-devel%{?_isa} = %{version}-%{release}
+
+%description -n libbson-static
+Static libbson library.
+
+%description -n libbson-static -l pl.UTF-8
+Statyczna biblioteka libbson.
 
 %package -n libbson-apidocs
 Summary:	API documentation for libbson library
@@ -159,7 +193,7 @@ export EVG_DOCS_BUILD=1
 	-DENABLE_SASL=%{!?with_sasl:OFF}%{?with_sasl:CYRUS} \
 	-DENABLE_SHM_COUNTERS=ON \
 	-DENABLE_SSL=%{!?with_ssl:OFF}%{?with_ssl:OPENSSL -DENABLE_CRYPTO_SYSTEM_PROFILE=ON} \
-	-DENABLE_STATIC=OFF \
+	%{!?with_static_libs:-DENABLE_STATIC=OFF} \
 	-DENABLE_TESTS=%{__ON_OFF tests} \
 	-DENABLE_ZLIB=SYSTEM \
 %ifarch x32
@@ -241,11 +275,20 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/libmongoc-%{libver}.pc
 %{_pkgconfigdir}/libmongoc-ssl-%{libver}.pc
 %{_libdir}/cmake/libmongoc-%{libver}
-%{_libdir}/cmake/mongoc-*.*
+%{_libdir}/cmake/mongoc-%{libver}
+%{_libdir}/cmake/mongoc-%{version}
 %if %{with doc}
 %{_mandir}/man3/mongoc_*.3*
 %endif
 %{_examplesdir}/libmongoc-%{version}
+
+%if %{with static_libs}
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libmongoc-static-%{libver}.a
+%{_pkgconfigdir}/libmongoc-static-%{libver}.pc
+%{_libdir}/cmake/libmongoc-static-%{libver}
+%endif
 
 %if %{with doc}
 %files apidocs
@@ -264,13 +307,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libbson-%{libver}.so
 %{_includedir}/libbson-%{libver}
 %{_pkgconfigdir}/libbson-%{libver}.pc
-%{_libdir}/cmake/bson-*.*
+%dir %{_libdir}/cmake/bson-%{libver}
+%{_libdir}/cmake/bson-%{libver}/bson-%{libver}-config*.cmake
+%{_libdir}/cmake/bson-%{libver}/bson-targets.cmake
+%{_libdir}/cmake/bson-%{libver}/bson_shared-targets*.cmake
+%{_libdir}/cmake/bson-%{version}
 %{_libdir}/cmake/libbson-%{libver}
 %if %{with doc}
 %{_mandir}/man3/bson_*.3*
 %{_mandir}/man3/libbson_legacy_extended_json.3*
 %endif
 %{_examplesdir}/libbson-%{version}
+
+%if %{with static_libs}
+%files -n libbson-static
+%defattr(644,root,root,755)
+%{_libdir}/libbson-static-%{libver}.a
+%{_pkgconfigdir}/libbson-static-%{libver}.pc
+%{_libdir}/cmake/bson-%{libver}/bson_static-targets*.cmake
+%{_libdir}/cmake/libbson-static-%{libver}
+%endif
 
 %if %{with doc}
 %files -n libbson-apidocs
